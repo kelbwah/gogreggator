@@ -10,7 +10,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kelbwah/gogreggator/internal/database"
 	"github.com/kelbwah/gogreggator/internal/handlers"
-	"github.com/kelbwah/gogreggator/internal/types"
+	"github.com/kelbwah/gogreggator/internal/scraper"
 	_ "github.com/lib/pq"
 )
 
@@ -25,19 +25,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("Database Error: %s\n", err.Error())
 	}
-
 	dbQueries := database.New(db)
-	apiCfg := &types.APIConfig{
-		DB: dbQueries,
-	}
 
 	mux := http.NewServeMux()
-	handlers.HandlersInit(mux, apiCfg)
+	handlers.HandlersInit(mux, dbQueries)
 
 	server := &http.Server{
 		Addr:    ":" + env["port"],
 		Handler: mux,
 	}
+
+	go scraper.ScrapeFeedData()
 
 	log.Printf("Listening on port ':%s'\n", env["port"])
 	if err := server.ListenAndServe(); err != nil {

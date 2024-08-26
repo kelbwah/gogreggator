@@ -1,4 +1,4 @@
-package types
+package handlers
 
 import (
 	"encoding/json"
@@ -10,11 +10,7 @@ import (
 	"github.com/kelbwah/gogreggator/utils"
 )
 
-type APIConfig struct {
-	DB *database.Queries
-}
-
-func (cfg *APIConfig) HandleUsersCreate(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) HandleUsersCreate(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		Name string `json:"name"`
 	}
@@ -41,4 +37,8 @@ func (cfg *APIConfig) HandleUsersCreate(w http.ResponseWriter, r *http.Request) 
 	}
 
 	utils.RespondWithJSON(w, http.StatusCreated, createdUser)
+}
+
+func (cfg *apiConfig) HandleUsersGet(w http.ResponseWriter, r *http.Request, user database.User) {
+	utils.RespondWithJSON(w, http.StatusFound, user)
 }
